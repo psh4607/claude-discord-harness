@@ -17,6 +17,24 @@ const commands = [
     .setName('instructions')
     .setDescription('채널 CLAUDE.md 수정')
     .addStringOption(opt => opt.setName('text').setDescription('새 지시사항').setRequired(true)),
+  new SlashCommandBuilder()
+    .setName('superpowers')
+    .setDescription('Superpowers 스킬')
+    .addSubcommand(sub => sub.setName('brainstorming').setDescription('브레인스토밍으로 아이디어를 설계로 발전'))
+    .addSubcommand(sub => sub.setName('writing-plans').setDescription('구현 계획 작성'))
+    .addSubcommand(sub => sub.setName('test-driven-development').setDescription('TDD 기반 구현')),
+  new SlashCommandBuilder()
+    .setName('omc')
+    .setDescription('Oh My Claude Code 스킬')
+    .addSubcommand(sub => sub.setName('ralph').setDescription('자율 실행 루프'))
+    .addSubcommand(sub => sub.setName('autopilot').setDescription('자율 구현'))
+    .addSubcommand(sub => sub.setName('ultrawork').setDescription('병렬 실행 엔진')),
+  new SlashCommandBuilder()
+    .setName('skill')
+    .setDescription('Claude Code 스킬 실행')
+    .addStringOption(opt =>
+      opt.setName('name').setDescription('스킬 이름').setRequired(true).setAutocomplete(true),
+    ),
 ];
 
 export async function registerCommands(guild: Guild): Promise<void> {
@@ -86,6 +104,30 @@ export async function handleInteraction(
         '대화 로그는 `.discord/chat-history/` 디렉토리에서 확인할 수 있습니다.',
       );
       break;
+
+    case 'superpowers':
+    case 'omc': {
+      const sub = interaction.options.getSubcommand();
+      const namespace = interaction.commandName === 'omc' ? 'oh-my-claudecode' : interaction.commandName;
+      if (bridge) {
+        bridge.enqueue(`/${namespace}:${sub}`, 'system');
+        await interaction.reply(`\`/${namespace}:${sub}\` 스킬을 실행합니다.`);
+      } else {
+        await interaction.reply('연결된 세션이 없습니다.');
+      }
+      break;
+    }
+
+    case 'skill': {
+      const name = interaction.options.getString('name', true);
+      if (bridge) {
+        bridge.enqueue(`/${name}`, 'system');
+        await interaction.reply(`\`/${name}\` 스킬을 실행합니다.`);
+      } else {
+        await interaction.reply('연결된 세션이 없습니다.');
+      }
+      break;
+    }
 
     default:
       await interaction.reply('알 수 없는 명령입니다.');
