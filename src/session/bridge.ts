@@ -35,6 +35,10 @@ export class SessionBridge {
     return this.sessionId;
   }
 
+  setModel(model: string): void {
+    this.options.model = model;
+  }
+
   enqueue(prompt: string, username: string): void {
     if (this.shuttingDown) return;
     this.queue.push({ prompt, username });

@@ -62,8 +62,8 @@ export async function handleInteraction(
     case 'model': {
       const modelName = interaction.options.getString('name', true);
       if (bridge) {
-        bridge.enqueue(`/model ${modelName}`, 'system');
-        await interaction.reply(`모델 변경을 요청했습니다: ${modelName}`);
+        bridge.setModel(modelName);
+        await interaction.reply(`모델이 ${modelName}(으)로 변경되었습니다. 다음 메시지부터 적용됩니다.`);
       } else {
         await interaction.reply('연결된 세션이 없습니다.');
       }
