@@ -2,6 +2,7 @@
 import { loadConfig } from './config/index.js';
 import { createClient } from './bot/client.js';
 import { registerEvents } from './bot/events.js';
+import { SkillCache } from './skills/cache.js';
 import { SessionPool } from './session/pool.js';
 import { Workspace } from './session/workspace.js';
 import { MessageSender } from './message/sender.js';
@@ -14,7 +15,11 @@ async function main() {
   const client = createClient();
   const pool = new SessionPool(workspace, sender, config, client);
 
-  registerEvents(client, pool, config);
+  const skillCache = SkillCache.createDefault();
+  await skillCache.initialize();
+  skillCache.startWatching();
+
+  registerEvents(client, pool, config, skillCache);
 
   const retentionTimer = scheduleRetention(
     workspace.paths.archives,
@@ -24,6 +29,7 @@ async function main() {
 
   const shutdown = async () => {
     console.log('종료 시작...');
+    skillCache.stopWatching();
     pool.shutdown();
     sender.cleanup();
     clearInterval(retentionTimer);
