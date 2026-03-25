@@ -89,13 +89,21 @@ async function findSkillMdFiles(dir: string): Promise<string[]> {
   return results;
 }
 
-function extractNamespace(pluginDir: string, skillMdPath: string): string {
-  // pluginDir 바로 아래 첫 번째 서브디렉토리 이름을 namespace로 사용
-  // 예: pluginDir=plugins, path=plugins/superpowers/5.0.5/skills/.../SKILL.md → superpowers
-  // 예: pluginDir=plugins, path=plugins/oh-my-claudecode/skills/ralph/SKILL.md → oh-my-claudecode
-  const relative = skillMdPath.slice(pluginDir.length + 1); // 앞의 pluginDir/ 제거
-  const firstSegment = relative.split('/')[0];
-  return firstSegment ?? '';
+function extractNamespace(_pluginDir: string, skillMdPath: string): string {
+  // 경로 패턴: .../{plugin-name}/[{version}/]skills/{skill-name}/SKILL.md
+  // skills 위쪽으로 올라가며, 버전 패턴(숫자.숫자)은 건너뛰고 plugin-name을 찾는다
+  const parts = skillMdPath.split('/');
+  const skillsIdx = parts.lastIndexOf('skills');
+  if (skillsIdx < 1) return '';
+
+  // skills 위쪽으로 올라가며 버전이 아닌 첫 번째 이름을 반환
+  for (let i = skillsIdx - 1; i >= 0; i--) {
+    const segment = parts[i];
+    if (/^\d+\.\d+/.test(segment)) continue; // 버전 패턴 건너뜀
+    if (segment === 'cache' || segment === 'plugins' || segment === '.claude') continue;
+    return segment;
+  }
+  return '';
 }
 
 async function scanPluginDir(dir: string): Promise<SkillEntry[]> {
