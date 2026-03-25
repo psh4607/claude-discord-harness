@@ -6,4 +6,4 @@ data/
 .omc/
 docs/
 CLAUDE.md
-.claude
+.claude/**/*
