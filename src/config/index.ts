@@ -4,7 +4,6 @@ export interface Config {
   discordToken: string;
   categoryName: string;
   requiredRole: string;
-  anthropicApiKey: string;
   dataDir: string;
   retentionDays: number;
 }
@@ -18,7 +17,6 @@ function requireEnv(key: string): string {
 export function loadConfig(): Config {
   return {
     discordToken: requireEnv('DISCORD_TOKEN'),
-    anthropicApiKey: requireEnv('ANTHROPIC_API_KEY'),
     requiredRole: requireEnv('DISCORD_REQUIRED_ROLE'),
     categoryName: process.env.DISCORD_CATEGORY_NAME ?? 'claude',
     dataDir: resolve(process.env.DATA_DIR ?? './data'),

@@ -19,7 +19,7 @@ describe('loadConfig', () => {
 
   it('기본값 적용', () => {
     process.env.DISCORD_TOKEN = 'test-token';
-    process.env.ANTHROPIC_API_KEY = 'test-key';
+
     process.env.DISCORD_REQUIRED_ROLE = 'admin';
     const config = loadConfig();
     expect(config.categoryName).toBe('claude');
@@ -29,7 +29,7 @@ describe('loadConfig', () => {
 
   it('환경변수 오버라이드', () => {
     process.env.DISCORD_TOKEN = 'test-token';
-    process.env.ANTHROPIC_API_KEY = 'test-key';
+
     process.env.DISCORD_REQUIRED_ROLE = 'admin';
     process.env.DISCORD_CATEGORY_NAME = 'my-claude';
     process.env.ARCHIVE_RETENTION_DAYS = '7';
