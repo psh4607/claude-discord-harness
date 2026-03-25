@@ -1,0 +1,58 @@
+# claude-discord-bot
+
+Discord 채널과 Claude Code 세션을 1:1 매핑하는 봇.
+새 채널 생성 시 Claude Code 세션이 시작되고, 메시지를 통해 세션과 상호작용한다.
+
+## 기술 스택
+
+- **런타임**: Node.js 22, TypeScript 5.5
+- **Discord**: discord.js v14
+- **AI**: @anthropic-ai/claude-agent-sdk
+- **유효성 검사**: Zod
+- **빌드**: tsup (ESM)
+- **테스트**: Vitest
+
+## 디렉토리 구조
+
+```
+src/
+  index.ts          # 진입점
+  bot/              # Discord 봇 이벤트 핸들러
+  session/          # Claude Code 세션 관리
+  config/           # 환경 변수 및 설정
+data/               # 세션 데이터 영구 저장소 (gitignore)
+dist/               # 빌드 결과물 (gitignore)
+docs/               # 설계 문서
+```
+
+## 환경 변수
+
+`.env.example`을 복사하여 `.env`를 생성하고 값을 채운다:
+
+| 변수 | 설명 |
+|------|------|
+| `DISCORD_TOKEN` | Discord 봇 토큰 |
+| `DISCORD_CATEGORY_NAME` | 봇이 관리할 채널 카테고리 이름 (기본값: claude) |
+| `DISCORD_REQUIRED_ROLE` | 봇 사용 가능 역할 (미설정 시 전체 허용) |
+| `ANTHROPIC_API_KEY` | Anthropic API 키 |
+| `DATA_DIR` | 세션 데이터 저장 경로 (기본값: ./data) |
+| `ARCHIVE_RETENTION_DAYS` | 아카이브 보존 기간 (기본값: 30) |
+
+## 빌드 및 실행
+
+```bash
+# 의존성 설치
+pnpm install
+
+# 개발 모드 (watch)
+pnpm dev
+
+# 프로덕션 빌드
+pnpm build
+
+# 실행
+pnpm start
+
+# 테스트
+pnpm test
+```
