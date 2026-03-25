@@ -1,0 +1,40 @@
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { loadConfig } from './index.js';
+
+describe('loadConfig', () => {
+  const originalEnv = process.env;
+
+  beforeEach(() => {
+    process.env = { ...originalEnv };
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+  });
+
+  it('필수 환경변수 누락 시 에러', () => {
+    delete process.env.DISCORD_TOKEN;
+    expect(() => loadConfig()).toThrow('DISCORD_TOKEN');
+  });
+
+  it('기본값 적용', () => {
+    process.env.DISCORD_TOKEN = 'test-token';
+    process.env.ANTHROPIC_API_KEY = 'test-key';
+    process.env.DISCORD_REQUIRED_ROLE = 'admin';
+    const config = loadConfig();
+    expect(config.categoryName).toBe('claude');
+    expect(config.dataDir).toContain('data');
+    expect(config.retentionDays).toBe(30);
+  });
+
+  it('환경변수 오버라이드', () => {
+    process.env.DISCORD_TOKEN = 'test-token';
+    process.env.ANTHROPIC_API_KEY = 'test-key';
+    process.env.DISCORD_REQUIRED_ROLE = 'admin';
+    process.env.DISCORD_CATEGORY_NAME = 'my-claude';
+    process.env.ARCHIVE_RETENTION_DAYS = '7';
+    const config = loadConfig();
+    expect(config.categoryName).toBe('my-claude');
+    expect(config.retentionDays).toBe(7);
+  });
+});
